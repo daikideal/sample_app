@@ -68,4 +68,13 @@ class FollowingTest < ActionDispatch::IntegrationTest
     end
   end
   
+  # フィードのHTMLのテスト
+  test "feed on Home page" do
+    get root_path
+    @user.feed.paginate(page: 1).each do |micropost|
+      # マイクロポストはエスケープされているので、CGI.escape()で比較する
+      assert_match CGI.escapeHTML(micropost.content), response.body
+    end
+  end
+  
 end
