@@ -1,0 +1,20 @@
+<!-- ユーザーの統計情報を表示するパーシャル -->
+
+<!--現在のユーザーを取得（@userがnilの場合のみ、@userにcurrent_userを代入）-->
+<% @user ||= current_user %>
+<div class="stats">
+  <!--フォロー数-->
+  <a href="<%= following_user_path(@user) %>">
+    <strong id="following" class="stat">
+      <%= @user.following.count %>
+    </strong>
+    following
+  </a>
+  <!--フォロワー数-->
+  <a href="<%= followers_user_path(@user) %>">
+    <strong id="followers" class="stat">
+      <%= @user.followers.count %>
+    </strong>
+    followers
+  </a>
+</div>

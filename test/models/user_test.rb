@@ -97,4 +97,54 @@ class UserTest < ActiveSupport::TestCase
     end
   end
   
+  # "following"関連のメソッドのテスト
+  test "should following and unfollow a user" do
+    michael = users(:michael)
+    archer = users(:archer)
+    # フォローしていないことを確認
+    assert_not michael.following?(archer)
+    # michaelがarcherをフォロー
+    michael.follow(archer)
+    # フォローしたことを確認
+    assert michael.following?(archer)
+    # michaelでarcherのフォローを解除
+    michael.unfollow(archer)
+    # フォロー解除を確認
+    assert_not michael.following?(archer)
+  end
+  
+  # "followes"に関連のメソッドのテスト
+  test "should follow and unfollow a user" do
+    michael = users(:michael)
+    archer = users(:archer)
+    assert_not michael.following?(archer)
+    # michaelがarcherをフォロー
+    michael.follow(archer)
+    # フォローしたことを確認
+    assert michael.following?(archer)
+    # archerのfollowersにmichaelが含まれているか確認
+    assert archer.followers.include?(michael)
+    michael.unfollow(archer)
+    assert_not michael.following?(archer)
+  end
+  
+  # ステータスフィードのテスト
+  test "feed should have the right posts" do
+    michael = users(:michael)
+    archer = users(:archer)
+    lana = users(:lana)
+    # フォローしているユーザーの投稿を確認
+    lana.microposts.each do |post_following|
+      assert michael.feed.include?(post_following)
+    end
+    # 自分自身の投稿を確認
+    michael.microposts.each do |post_self|
+      assert michael.feed.include?(post_self)
+    end
+    # フォローしていないユーザーの投稿が表示されないことを確認
+    archer.microposts.each do |post_unfollowed|
+      assert_not michael.feed.include?(post_unfollowed)
+    end
+  end
+  
 end

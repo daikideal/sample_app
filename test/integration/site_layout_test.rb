@@ -2,6 +2,7 @@ require 'test_helper'
 
 class SiteLayoutTest < ActionDispatch::IntegrationTest
   
+  # 未ログイン状態でのレイアウトのリンクのテスト
   test "layout links" do
     get root_path
     assert_template 'static_pages/home'
@@ -29,6 +30,16 @@ class SiteLayoutTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", user_path(@user)
     assert_select "a[href=?]", edit_user_path(@user)
     assert_select "a[href=?]", logout_path
+  end
+  
+  # 統計情報に対するテスト
+  test "count relationships" do
+    log_in_as(@user)
+    get root_path
+    # フォロー/フォロワー数が正確か確認
+    assert_match @user.microposts.count.to_s, response.body
+    assert_match @user.active_relationships.count.to_s, response.body
+    assert_match @user.passive_relationships.count.to_s, response.body
   end
   
 end
